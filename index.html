@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Te Araroa Map</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <div id="map" aria-label="Actual map of New Zealand with Te Araroa overlaid"></div>
+      <svg class="ocean-waves" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <path
+            id="longWave"
+            d="M-240 0 C-110 -28 10 30 138 0 S390 -30 520 0 S780 30 910 0 S1160 -30 1290 0 S1540 30 1740 0"
+          />
+          <path
+            id="shortWave"
+            d="M-180 0 C-92 -16 -22 18 62 0 S226 -18 314 0 S482 18 568 0 S740 -18 920 0"
+          />
+          <mask id="oceanWaveMask" x="0" y="0" width="1600" height="900" maskUnits="userSpaceOnUse">
+            <rect width="1600" height="900" fill="white" />
+            <g id="landWaveBlockers" fill="black"></g>
+          </mask>
+        </defs>
+
+        <g mask="url(#oceanWaveMask)">
+          <g class="wave-layer wave-large">
+            <use href="#longWave" y="70" />
+            <use href="#longWave" y="170" />
+            <use href="#longWave" y="270" />
+            <use href="#longWave" y="370" />
+            <use href="#longWave" y="470" />
+            <use href="#longWave" y="570" />
+            <use href="#longWave" y="670" />
+            <use href="#longWave" y="770" />
+            <use href="#longWave" y="870" />
+          </g>
+
+          <g class="wave-layer wave-medium">
+            <use href="#shortWave" x="40" y="120" />
+            <use href="#shortWave" x="620" y="120" />
+            <use href="#shortWave" x="100" y="235" />
+            <use href="#shortWave" x="680" y="235" />
+            <use href="#shortWave" x="-20" y="350" />
+            <use href="#shortWave" x="560" y="350" />
+            <use href="#shortWave" x="130" y="465" />
+            <use href="#shortWave" x="710" y="465" />
+            <use href="#shortWave" x="30" y="580" />
+            <use href="#shortWave" x="610" y="580" />
+            <use href="#shortWave" x="150" y="695" />
+            <use href="#shortWave" x="730" y="695" />
+            <use href="#shortWave" x="0" y="810" />
+            <use href="#shortWave" x="580" y="810" />
+          </g>
+
+          <g class="wave-layer wave-glints">
+            <use href="#shortWave" x="-80" y="95" />
+            <use href="#shortWave" x="410" y="305" />
+            <use href="#shortWave" x="910" y="515" />
+            <use href="#shortWave" x="230" y="735" />
+          </g>
+        </g>
+      </svg>
+      <aside id="photoPanel" class="photo-panel" aria-live="polite" hidden>
+        <button id="closePhoto" class="close-photo" type="button" aria-label="Close photo">×</button>
+        <img id="photoImage" alt="" />
+        <div class="photo-copy">
+          <h2 id="photoTitle"></h2>
+          <p id="photoDescription"></p>
+          <a id="photoLink" href="#" target="_blank" rel="noreferrer">View source</a>
+        </div>
+      </aside>
+    </main>
+
+    <script src="leaflet.js"></script>
+    <script src="trail-data.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

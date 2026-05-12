@@ -1,0 +1,339 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+main,
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  position: relative;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#map {
+  background: #8fcfe1;
+  cursor: default;
+}
+
+.ocean-waves {
+  position: absolute;
+  inset: 0;
+  z-index: 520;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.leaflet-container {
+  overflow: hidden;
+  touch-action: pan-x pan-y;
+  outline: 0;
+  cursor: default;
+}
+
+.leaflet-grab,
+.leaflet-dragging .leaflet-grab {
+  cursor: default;
+}
+
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.leaflet-tile {
+  width: 256px;
+  height: 256px;
+  filter: saturate(0.96) contrast(0.96) brightness(1.03);
+}
+
+.leaflet-pane {
+  z-index: 400;
+}
+
+.leaflet-tile-pane {
+  z-index: 200;
+}
+
+.leaflet-overlay-pane {
+  z-index: 400;
+}
+
+.leaflet-marker-pane {
+  z-index: 700;
+}
+
+.leaflet-tooltip-pane {
+  z-index: 650;
+}
+
+.leaflet-control-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.leaflet-control {
+  pointer-events: auto;
+}
+
+.leaflet-container {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.leaflet-bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+.leaflet-right {
+  position: absolute;
+  right: 0;
+}
+
+.leaflet-control-attribution {
+  margin: 0 8px 6px 0;
+  padding: 2px 6px;
+  color: #21313d;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+}
+
+.leaflet-control-attribution a {
+  color: #185d8f;
+}
+
+.trail-line {
+  filter: drop-shadow(0 0 7px rgba(194, 138, 22, 0.68));
+}
+
+.start-marker,
+.end-marker {
+  width: 16px;
+  height: 16px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.start-marker {
+  background: #2ecc71;
+}
+
+.end-marker {
+  background: #ff4d4d;
+}
+
+.landmark-callout {
+  overflow: visible;
+  pointer-events: none;
+  z-index: 720 !important;
+}
+
+.landmark-callout .note {
+  position: absolute;
+  display: block;
+  width: max-content;
+  max-width: 210px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #252112;
+  background: transparent;
+  font-family: "Comic Sans MS", "Marker Felt", "Trebuchet MS", sans-serif;
+  font-size: clamp(13px, 1.05vw, 19px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow:
+    -2px -2px 0 rgba(255, 255, 255, 0.86),
+    2px -2px 0 rgba(255, 255, 255, 0.86),
+    -2px 2px 0 rgba(255, 255, 255, 0.86),
+    2px 2px 0 rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.landmark-callout .note-right {
+  text-align: right;
+}
+
+.callout-line {
+  position: absolute;
+  height: 3px;
+  background: #5d4a24;
+  border-radius: 999px;
+  transform-origin: left center;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.55));
+}
+
+.wave-layer {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+}
+
+.wave-large {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 2.4;
+  stroke-dasharray: 210 90;
+  animation:
+    wave-drift-right 34s linear infinite,
+    wave-shimmer 7s ease-in-out infinite;
+}
+
+.wave-medium {
+  stroke: rgba(220, 252, 255, 0.28);
+  stroke-width: 1.7;
+  stroke-dasharray: 92 58;
+  animation:
+    wave-drift-left 27s linear infinite,
+    wave-shimmer 6s ease-in-out infinite reverse;
+}
+
+.wave-glints {
+  stroke: rgba(255, 255, 255, 0.34);
+  stroke-width: 1.2;
+  stroke-dasharray: 34 120;
+  animation:
+    wave-drift-right 18s linear infinite,
+    wave-swell 5s ease-in-out infinite;
+}
+
+.photo-panel {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  z-index: 1200;
+  width: min(360px, calc(100vw - 48px));
+  overflow: hidden;
+  border: 3px solid rgba(37, 33, 18, 0.86);
+  border-radius: 8px;
+  background: #fffaf0;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+}
+
+@keyframes wave-drift-right {
+  from {
+    transform: translate3d(-90px, 0, 0);
+  }
+
+  to {
+    transform: translate3d(90px, 0, 0);
+  }
+}
+
+@keyframes wave-drift-left {
+  from {
+    transform: translate3d(90px, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-90px, 0, 0);
+  }
+}
+
+@keyframes wave-shimmer {
+  0%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.7;
+  }
+
+  50% {
+    stroke-dashoffset: 140;
+    opacity: 1;
+  }
+}
+
+@keyframes wave-swell {
+  0%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.32;
+  }
+
+  50% {
+    stroke-dashoffset: -90;
+    opacity: 0.76;
+  }
+}
+
+.photo-panel[hidden] {
+  display: none;
+}
+
+.photo-panel img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #d8e7e9;
+}
+
+.photo-copy {
+  padding: 14px 16px 16px;
+}
+
+.photo-copy h2 {
+  margin: 0 34px 8px 0;
+  color: #252112;
+  font-family: "Comic Sans MS", "Marker Felt", "Trebuchet MS", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.photo-copy p {
+  margin: 0 0 10px;
+  color: #3c392d;
+  font: 600 0.92rem/1.35 Arial, Helvetica, sans-serif;
+}
+
+.photo-copy a {
+  color: #1f667e;
+  font: 800 0.84rem/1 Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+}
+
+.close-photo {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #252112;
+  border-radius: 50%;
+  color: #252112;
+  background: rgba(255, 250, 240, 0.92);
+  font: 900 22px/24px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
