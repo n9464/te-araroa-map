@@ -377,11 +377,27 @@ function closeRunEntry() {
 }
 
 function updatePlayerMarkers(routeMeasure) {
-  players.forEach((player) => {
-    const total = playerTotalKm(player.id);
-    const basePoint = pointAtTrailKm(routeMeasure, total);
-    const mapPoint = map.latLngToLayerPoint(basePoint);
-    const shiftedPoint = L.point(mapPoint.x + player.offset[0], mapPoint.y + player.offset[1]);
+  const markerPositions = players.map((player) => {
+    return {
+      player,
+      basePoint: map.latLngToLayerPoint(pointAtTrailKm(routeMeasure, playerTotalKm(player.id))),
+    };
+  });
+
+  markerPositions.forEach(({ player, basePoint }, index) => {
+    const nearestDistance = markerPositions.reduce((nearest, candidate, candidateIndex) => {
+      if (candidateIndex === index) return nearest;
+      return Math.min(nearest, basePoint.distanceTo(candidate.basePoint));
+    }, Infinity);
+    const offsetStrength = Number.isFinite(nearestDistance)
+      ? clamp(1 - nearestDistance / 34, 0, 1)
+      : 0;
+    const shiftedPoint = offsetStrength
+      ? L.point(
+          basePoint.x + player.offset[0] * offsetStrength,
+          basePoint.y + player.offset[1] * offsetStrength,
+        )
+      : basePoint;
     const latLng = map.layerPointToLatLng(shiftedPoint);
     const marker = playerMarkers.get(player.id);
 
