@@ -334,16 +334,6 @@ body {
   font-style: italic;
 }
 
-.player-tooltip {
-  border: 0;
-  border-radius: 999px;
-  padding: 3px 8px;
-  color: #252112;
-  background: rgba(255, 250, 240, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font: 900 0.72rem/1 Arial, Helvetica, sans-serif;
-}
-
 .run-modal {
   position: absolute;
   inset: 0;

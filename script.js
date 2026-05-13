@@ -387,7 +387,6 @@ function updatePlayerMarkers(routeMeasure) {
 
     if (marker) {
       marker.setLatLng(latLng);
-      marker.setTooltipContent(`${player.name}: ${formatKm(total)}`);
       return;
     }
 
@@ -399,11 +398,6 @@ function updatePlayerMarkers(routeMeasure) {
       fillOpacity: 1,
       className: `player-marker player-${player.id}`,
       interactive: false,
-    }).bindTooltip(`${player.name}: ${formatKm(total)}`, {
-      permanent: true,
-      direction: "right",
-      offset: [10, 0],
-      className: "player-tooltip",
     });
 
     newMarker.addTo(map);
