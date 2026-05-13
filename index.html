@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Te Araroa Map</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <main>
@@ -72,10 +72,35 @@
           <a id="photoLink" href="#" target="_blank" rel="noreferrer">View source</a>
         </div>
       </aside>
+      <aside class="run-history" aria-label="Run history">
+        <h2>Run History</h2>
+        <div id="runnerList" class="runner-list"></div>
+      </aside>
+      <div id="runModal" class="run-modal" hidden>
+        <div class="run-dialog" role="dialog" aria-modal="true" aria-labelledby="runModalTitle">
+          <button id="closeRunModal" class="close-run-modal" type="button" aria-label="Close run entry">×</button>
+          <h2 id="runModalTitle">Add Run</h2>
+          <form id="passwordForm" class="run-form">
+            <label>
+              Password
+              <input id="passwordInput" type="password" autocomplete="current-password" />
+            </label>
+            <button type="submit">Unlock</button>
+            <p id="passwordError" class="form-error" aria-live="polite"></p>
+          </form>
+          <form id="runForm" class="run-form" hidden>
+            <label>
+              Run distance (km)
+              <input id="runDistance" type="text" inputmode="decimal" placeholder="12.5" />
+            </label>
+            <button type="submit">Add Run</button>
+          </form>
+        </div>
+      </div>
     </main>
 
     <script src="leaflet.js"></script>
     <script src="trail-data.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=3"></script>
   </body>
 </html>

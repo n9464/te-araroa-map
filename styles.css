@@ -240,6 +240,199 @@ body {
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
 }
 
+.run-history {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 1100;
+  width: min(330px, calc(100vw - 36px));
+  max-height: min(46vh, 430px);
+  overflow: auto;
+  border: 3px solid rgba(37, 33, 18, 0.82);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.94);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+}
+
+.run-history h2 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 12px 14px 10px;
+  border-bottom: 2px solid rgba(37, 33, 18, 0.18);
+  color: #252112;
+  background: rgba(255, 250, 240, 0.98);
+  font-family: "Comic Sans MS", "Marker Felt", "Trebuchet MS", sans-serif;
+  font-size: 1.15rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.runner-list {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.runner-card {
+  border: 1px solid rgba(37, 33, 18, 0.14);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.runner-name {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #252112;
+  background: transparent;
+  font: 900 1rem/1 "Comic Sans MS", "Marker Felt", "Trebuchet MS", sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.runner-name span {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--runner-color);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+}
+
+.runner-card p {
+  margin: 6px 0 8px;
+  color: #524c3b;
+  font: 800 0.82rem/1.2 Arial, Helvetica, sans-serif;
+}
+
+.runner-card ul {
+  display: grid;
+  gap: 5px;
+  max-height: 94px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.runner-card li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #393426;
+  font: 700 0.78rem/1.2 Arial, Helvetica, sans-serif;
+}
+
+.empty-run {
+  color: rgba(57, 52, 38, 0.62);
+  font-style: italic;
+}
+
+.player-tooltip {
+  border: 0;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #252112;
+  background: rgba(255, 250, 240, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font: 900 0.72rem/1 Arial, Helvetica, sans-serif;
+}
+
+.run-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(18, 25, 30, 0.32);
+}
+
+.run-modal[hidden] {
+  display: none;
+}
+
+.run-dialog {
+  position: relative;
+  width: min(360px, 100%);
+  border: 3px solid rgba(37, 33, 18, 0.88);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fffaf0;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+}
+
+.run-dialog h2 {
+  margin: 0 34px 16px 0;
+  color: #252112;
+  font-family: "Comic Sans MS", "Marker Felt", "Trebuchet MS", sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.run-form {
+  display: grid;
+  gap: 12px;
+}
+
+.run-form label {
+  display: grid;
+  gap: 6px;
+  color: #524c3b;
+  font: 900 0.78rem/1 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.run-form input {
+  min-height: 42px;
+  border: 2px solid rgba(37, 33, 18, 0.28);
+  border-radius: 6px;
+  padding: 0 10px;
+  color: #252112;
+  background: #ffffff;
+  font: 800 1rem/1 Arial, Helvetica, sans-serif;
+}
+
+.run-form button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  background: #252112;
+  font: 900 0.85rem/1 Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.form-error {
+  min-height: 1rem;
+  margin: 0;
+  color: #a02c2c;
+  font: 800 0.82rem/1.2 Arial, Helvetica, sans-serif;
+}
+
+.close-run-modal {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #252112;
+  border-radius: 50%;
+  color: #252112;
+  background: rgba(255, 250, 240, 0.92);
+  font: 900 22px/24px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
 @keyframes wave-drift-right {
   from {
     transform: translate3d(-90px, 0, 0);

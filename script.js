@@ -32,6 +32,15 @@ const trailStyle = {
   className: "trail-line",
 };
 
+const TRAIL_DISTANCE_KM = 3000;
+const RUN_PASSWORD = "nisala2026";
+const RUN_STORAGE_KEY = "te-araroa-run-history-v1";
+const players = [
+  { id: "samuel", name: "Samuel", color: "#ffd43b", offset: [-11, -7] },
+  { id: "nicolas", name: "Nicolas", color: "#2276ff", offset: [11, -7] },
+  { id: "lachlan", name: "Lachlan", color: "#ff5db8", offset: [0, 13] },
+];
+
 const landmarks = [
   { text: "Shoes on in the Northland forests", page: "Northland Region", point: [-35.25, 173.45], label: [-34.75, 171.45], align: "right" },
   { text: "Ninety Mile Beach", page: "Ninety Mile Beach, New Zealand", point: [-34.95, 173.05], label: [-34.18, 174.65], align: "left" },
@@ -76,6 +85,15 @@ const photoTitle = document.querySelector("#photoTitle");
 const photoDescription = document.querySelector("#photoDescription");
 const photoLink = document.querySelector("#photoLink");
 const closePhoto = document.querySelector("#closePhoto");
+const runnerList = document.querySelector("#runnerList");
+const runModal = document.querySelector("#runModal");
+const runModalTitle = document.querySelector("#runModalTitle");
+const closeRunModal = document.querySelector("#closeRunModal");
+const passwordForm = document.querySelector("#passwordForm");
+const passwordInput = document.querySelector("#passwordInput");
+const passwordError = document.querySelector("#passwordError");
+const runForm = document.querySelector("#runForm");
+const runDistance = document.querySelector("#runDistance");
 const CALLOUT_WIDTH = 900;
 const CALLOUT_HEIGHT = 420;
 const CALLOUT_CENTER_X = CALLOUT_WIDTH / 2;
@@ -137,6 +155,72 @@ const waveLandMasks = [
     [-47.48, 167.85],
   ],
 ];
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function toRadians(value) {
+  return (value * Math.PI) / 180;
+}
+
+function haversineKm(a, b) {
+  const earthRadiusKm = 6371;
+  const dLat = toRadians(b[0] - a[0]);
+  const dLng = toRadians(b[1] - a[1]);
+  const lat1 = toRadians(a[0]);
+  const lat2 = toRadians(b[0]);
+  const sinLat = Math.sin(dLat / 2);
+  const sinLng = Math.sin(dLng / 2);
+  const h = sinLat * sinLat + Math.cos(lat1) * Math.cos(lat2) * sinLng * sinLng;
+
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+}
+
+function buildRouteMeasure(segments) {
+  const points = [];
+  let cumulativeKm = 0;
+
+  segments.forEach((segment) => {
+    segment.forEach((point, index) => {
+      if (points.length && index > 0) {
+        cumulativeKm += haversineKm(points[points.length - 1].point, point);
+      }
+
+      points.push({ point, cumulativeKm });
+    });
+  });
+
+  return {
+    points,
+    totalKm: cumulativeKm,
+  };
+}
+
+function pointAtTrailKm(routeMeasure, kilometers) {
+  const targetKm = (clamp(kilometers, 0, TRAIL_DISTANCE_KM) / TRAIL_DISTANCE_KM) * routeMeasure.totalKm;
+  const points = routeMeasure.points;
+
+  if (!points.length) return [-34.426699, 172.677591];
+  if (targetKm <= 0) return points[0].point;
+  if (targetKm >= routeMeasure.totalKm) return points[points.length - 1].point;
+
+  for (let index = 1; index < points.length; index += 1) {
+    if (points[index].cumulativeKm >= targetKm) {
+      const previous = points[index - 1];
+      const current = points[index];
+      const segmentKm = current.cumulativeKm - previous.cumulativeKm || 1;
+      const ratio = (targetKm - previous.cumulativeKm) / segmentKm;
+
+      return [
+        previous.point[0] + (current.point[0] - previous.point[0]) * ratio,
+        previous.point[1] + (current.point[1] - previous.point[1]) * ratio,
+      ];
+    }
+  }
+
+  return points[points.length - 1].point;
+}
 
 function markerIcon(className) {
   return L.divIcon({
@@ -209,6 +293,124 @@ function updateWaveLandMask() {
   });
 }
 
+let selectedPlayerId = null;
+let runHistory = loadRunHistory();
+const playerMarkers = new Map();
+const routeMeasure = buildRouteMeasure(TE_ARAROA_ROUTE);
+
+function loadRunHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(RUN_STORAGE_KEY));
+    if (!saved || typeof saved !== "object") throw new Error("Invalid run history");
+
+    return players.reduce((history, player) => {
+      history[player.id] = Array.isArray(saved[player.id])
+        ? saved[player.id].filter((run) => Number.isFinite(Number(run.km)) && Number(run.km) > 0)
+        : [];
+      return history;
+    }, {});
+  } catch {
+    return players.reduce((history, player) => {
+      history[player.id] = [];
+      return history;
+    }, {});
+  }
+}
+
+function saveRunHistory() {
+  localStorage.setItem(RUN_STORAGE_KEY, JSON.stringify(runHistory));
+}
+
+function playerTotalKm(playerId) {
+  return runHistory[playerId].reduce((total, run) => total + Number(run.km), 0);
+}
+
+function formatKm(value) {
+  return `${Number(value).toLocaleString(undefined, {
+    maximumFractionDigits: 2,
+  })} km`;
+}
+
+function renderRunHistory() {
+  runnerList.innerHTML = players
+    .map((player) => {
+      const runs = runHistory[player.id];
+      const total = playerTotalKm(player.id);
+      const history = runs.length
+        ? runs
+            .map(
+              (run) =>
+                `<li><span>${escapeHtml(run.date)}</span><strong>${formatKm(run.km)}</strong></li>`,
+            )
+            .join("")
+        : `<li class="empty-run">No runs yet</li>`;
+
+      return `
+        <article class="runner-card" style="--runner-color:${player.color}">
+          <button class="runner-name" type="button" data-runner="${player.id}">
+            <span></span>${player.name}
+          </button>
+          <p>${formatKm(total)} / ${TRAIL_DISTANCE_KM.toLocaleString()} km</p>
+          <ul>${history}</ul>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function openRunModal(playerId) {
+  const player = players.find((item) => item.id === playerId);
+  selectedPlayerId = playerId;
+  runModal.hidden = false;
+  runModalTitle.textContent = `Add ${player.name} Run`;
+  passwordForm.hidden = false;
+  runForm.hidden = true;
+  passwordInput.value = "";
+  runDistance.value = "";
+  passwordError.textContent = "";
+  requestAnimationFrame(() => passwordInput.focus());
+}
+
+function closeRunEntry() {
+  runModal.hidden = true;
+  selectedPlayerId = null;
+}
+
+function updatePlayerMarkers(routeMeasure) {
+  players.forEach((player) => {
+    const total = playerTotalKm(player.id);
+    const basePoint = pointAtTrailKm(routeMeasure, total);
+    const mapPoint = map.latLngToLayerPoint(basePoint);
+    const shiftedPoint = L.point(mapPoint.x + player.offset[0], mapPoint.y + player.offset[1]);
+    const latLng = map.layerPointToLatLng(shiftedPoint);
+    const marker = playerMarkers.get(player.id);
+
+    if (marker) {
+      marker.setLatLng(latLng);
+      marker.setTooltipContent(`${player.name}: ${formatKm(total)}`);
+      return;
+    }
+
+    const newMarker = L.circleMarker(latLng, {
+      radius: 8,
+      color: "#ffffff",
+      weight: 3,
+      fillColor: player.color,
+      fillOpacity: 1,
+      className: `player-marker player-${player.id}`,
+      interactive: false,
+    }).bindTooltip(`${player.name}: ${formatKm(total)}`, {
+      permanent: true,
+      direction: "right",
+      offset: [10, 0],
+      className: "player-tooltip",
+    });
+
+    newMarker.addTo(map);
+    playerMarkers.set(player.id, newMarker);
+  });
+}
+
 async function showLandmarkPhoto(landmark) {
   photoPanel.hidden = false;
   photoPanel.classList.add("is-loading");
@@ -268,6 +470,54 @@ document.addEventListener("click", (event) => {
   showLandmarkPhoto(landmarks[Number(button.dataset.landmark)]);
 });
 
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-runner]");
+  if (!button) return;
+
+  event.preventDefault();
+  openRunModal(button.dataset.runner);
+});
+
+closeRunModal.addEventListener("click", closeRunEntry);
+
+runModal.addEventListener("click", (event) => {
+  if (event.target === runModal) closeRunEntry();
+});
+
+passwordForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (passwordInput.value !== RUN_PASSWORD) {
+    passwordError.textContent = "Incorrect password.";
+    passwordInput.select();
+    return;
+  }
+
+  passwordError.textContent = "";
+  passwordForm.hidden = true;
+  runForm.hidden = false;
+  requestAnimationFrame(() => runDistance.focus());
+});
+
+runForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const km = Number(runDistance.value);
+  if (!selectedPlayerId || !Number.isFinite(km) || km <= 0) return;
+
+  runHistory[selectedPlayerId].push({
+    id: `${Date.now()}`,
+    date: new Date().toISOString().slice(0, 10),
+    km: Math.round(km * 100) / 100,
+  });
+
+  saveRunHistory();
+  renderRunHistory();
+  updatePlayerMarkers(routeMeasure);
+  runDistance.value = "";
+  runDistance.focus();
+});
+
 function drawTrail() {
   const allSegments = TE_ARAROA_ROUTE;
   const route = L.featureGroup().addTo(map);
@@ -321,6 +571,8 @@ function drawTrail() {
 
   renderCallouts();
   updateWaveLandMask();
+  renderRunHistory();
+  updatePlayerMarkers(routeMeasure);
   map.on("resize", () => {
     map.fitBounds(route.getBounds(), {
       padding: [8, 18],
@@ -328,6 +580,7 @@ function drawTrail() {
     });
     requestAnimationFrame(renderCallouts);
     requestAnimationFrame(updateWaveLandMask);
+    requestAnimationFrame(() => updatePlayerMarkers(routeMeasure));
   });
 }
 
