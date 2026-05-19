@@ -1,13 +1,16 @@
+const shouldEnableTouchInteractions =
+  window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+
 const map = L.map("map", {
   zoomControl: false,
   attributionControl: true,
-  dragging: false,
+  dragging: shouldEnableTouchInteractions,
   scrollWheelZoom: false,
   doubleClickZoom: false,
   boxZoom: false,
   keyboard: false,
-  tap: false,
-  touchZoom: false,
+  tap: shouldEnableTouchInteractions,
+  touchZoom: shouldEnableTouchInteractions,
   preferCanvas: false,
 });
 const NEW_ZEALAND_BOUNDS = L.latLngBounds(

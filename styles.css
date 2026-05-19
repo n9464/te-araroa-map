@@ -12,6 +12,13 @@ main,
 
 main {
   position: relative;
+  min-height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  main {
+    min-height: 100dvh;
+  }
 }
 
 body {
@@ -520,4 +527,58 @@ body {
   background: rgba(255, 250, 240, 0.92);
   font: 900 22px/24px Arial, Helvetica, sans-serif;
   cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .photo-panel {
+    right: 12px;
+    top: 12px;
+    width: min(320px, calc(100vw - 24px));
+  }
+
+  .run-history {
+    left: 12px;
+    bottom: 12px;
+    width: min(300px, calc(100vw - 24px));
+    max-height: min(40vh, 360px);
+  }
+}
+
+@media (max-width: 640px) {
+  .landmark-callout .note {
+    max-width: 140px;
+    font-size: clamp(10px, 2.8vw, 13px);
+    line-height: 1.1;
+  }
+
+  .photo-panel {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 52vh;
+    overflow: auto;
+  }
+
+  .run-history {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 34vh;
+  }
+
+  .run-history h2 {
+    font-size: 1.02rem;
+  }
+
+  .runner-card ul {
+    max-height: 84px;
+  }
+
+  .close-photo,
+  .close-run-modal {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    line-height: 28px;
+  }
 }
